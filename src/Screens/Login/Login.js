@@ -7,13 +7,11 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
-
-import auth from '@react-native-firebase/auth';
 import CheckBox from '../../components/CheckBox';
 import {connect, useDispatch} from 'react-redux';
-import {authAction, loginAction} from '../../redux/Home.slice';
+import { loginAction} from '../../redux/Home.slice';
 
-const LoginScreen = ({onLoginAction}) => {
+const LoginScreen = ({onLoginAction,navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
@@ -77,6 +75,12 @@ const LoginScreen = ({onLoginAction}) => {
         disabled={!isChecked}
         onPress={LoginFun}>
         <Text style={styles.loginButtonText}>Login</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => navigation.navigate('SignUp')}>
+        <Text style={styles.loginButtonText}>Sign Up </Text>
       </TouchableOpacity>
     </View>
   );

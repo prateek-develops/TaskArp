@@ -22,11 +22,11 @@ const SignUp = ({navigation}) => {
       Alert.alert('Invalid email.');
     } else if (!password) {
       Alert.alert('Please enter your password.');
-    }
-    else if (!passwordRegex.test(password)) {
-      Alert.alert('Password should be minimum 8 characters and 1 uppercase and 1 number.');
-    }
-    else {
+    } else if (!passwordRegex.test(password)) {
+      Alert.alert(
+        'Password should be minimum 8 characters and 1 uppercase and 1 number.',
+      );
+    } else {
       auth()
         .createUserWithEmailAndPassword(email, password)
         .then(() => {
@@ -52,7 +52,9 @@ const SignUp = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={{fontSize: 18, fontWeight: '700',marginVertical:20}}>Sign Up Form</Text>
+      <Text style={{fontSize: 18, fontWeight: '700', marginVertical: 20}}>
+        Sign Up Form
+      </Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -72,6 +74,12 @@ const SignUp = ({navigation}) => {
       ) : null}
       <TouchableOpacity style={styles.loginButton} onPress={signUpFun}>
         <Text style={styles.loginButtonText}>SignUp</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.loginButton}
+        onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.loginButtonText}>Log in </Text>
       </TouchableOpacity>
     </View>
   );
