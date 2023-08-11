@@ -8,36 +8,42 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 
-import CustomCheckbox from '../../components/CustomCheckbox';
 import auth from '@react-native-firebase/auth';
+import CheckBox from '../../components/CheckBox';
+import {connect, useDispatch} from 'react-redux';
+import {authAction, loginAction} from '../../redux/Home.slice';
 
-const LoginScreen = () => {
+const LoginScreen = ({onLoginAction}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [isChecked, setIsChecked] = useState(false);
-  const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
+  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+  const dispatch = useDispatch();
   const LoginFun = () => {
     if (!email) {
-      alert('Please enter your email.');
+      Alert.alert('Please enter your email.');
     } else if (!emailRegex.test(email)) {
-      alert('Invalid email.');
+      Alert.alert('Invalid email.');
     } else if (!password) {
-      alert('Please enter your password.');
+      Alert.alert('Please enter your password.');
     } else if (!passwordRegex.test(password)) {
-      alert('Password should be minimum 8 characters and 1 uppercase.');
+      Alert.alert('Password should be minimum 8 characters and 1 uppercase.');
     } else {
-      auth()
-        .signInWithEmailAndPassword(email, password)
-        .then(res => {
-          console.log(JSON.stringify(res));
-          Alert.alert('User Logged In');
-        })
-        .catch(error => {
-          console.log(error);
-        });
+      const formData = {
+        email: email,
+        password: password,
+      };
+      onLoginAction(formData).then(res => {
+        if (res?.type?.includes('rejected')) {
+          Alert.alert(res.payload);
+        }
+        if (res?.type?.includes('fulfilled')) {
+          Alert.alert('Login Successfully');
+        }
+        setIsChecked(false);
+      });
     }
   };
 
@@ -57,7 +63,7 @@ const LoginScreen = () => {
         value={password}
         secureTextEntry
       />
-      <CustomCheckbox
+      <CheckBox
         label="I accept the terms & conditions"
         value={isChecked}
         onValueChange={setIsChecked}
@@ -84,12 +90,13 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   input: {
-    width: '100%',
-    height: 40,
+    width: '90%',
     borderWidth: 1,
     borderColor: 'gray',
     marginBottom: 10,
     paddingHorizontal: 10,
+    marginVertical: 10,
+    padding: 15,
   },
   errorText: {
     color: 'red',
@@ -99,6 +106,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     padding: 10,
     borderRadius: 5,
+    width: '90%',
+    marginTop: 10,
   },
   loginButtonText: {
     color: 'white',
@@ -106,4 +115,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+
+
+const mapStateToProps = state => {
+  return {
+    authReducer: state.authReducer,
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  onLoginAction: params => dispatch(loginAction(params)),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
